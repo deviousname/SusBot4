@@ -1,6 +1,4 @@
-# SusBot 4
-
-SusBot 4 for PixelPlace.io
+# SusBot 4 for PixelPlace.io
 
 Step 1: Make sure you have correctly installed Python 3.7.9, and the latest version of Chrome, and that you have atleast a one day old Reddit account to use.
 
