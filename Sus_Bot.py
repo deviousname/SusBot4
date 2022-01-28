@@ -3,7 +3,7 @@
 #no permission to sell
 
 import crewmate #login credentials, requires a Reddit account, open crewmate.py and put your info there
-import keyboard # https://pypi.org/project/keyboard/
+import keyboard 
 import pyautogui
 import random
 import time
@@ -15,7 +15,7 @@ from PIL import ImageGrab
 from PIL import Image
 from PIL import ImageChops
 
-from selenium import webdriver # https://selenium-python.readthedocs.io/ (requires Google Chrome latest version)
+from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
