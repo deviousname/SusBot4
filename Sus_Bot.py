@@ -3,15 +3,22 @@
 #no permission to sell
 
 import crewmate #login credentials, requires a Reddit account, open crewmate.py and put your info there
+
 import keyboard #https://pypi.org/project/keyboard/
-import pyautogui
-import random
-import time
+import pyautogui #https://pyautogui.readthedocs.io/en/latest/
+
+import random 
+import time 
 import copy
-from itertools import cycle
+import itertools
+from itertools import cycle 
 from ast import literal_eval as make_tuple
 
-from PIL import ImageGrab
+import subprocess
+import numpy as np
+from numpy import sqrt 
+
+from PIL import ImageGrab #https://pillow.readthedocs.io/en/stable/
 from PIL import Image
 from PIL import ImageChops
 
@@ -40,11 +47,14 @@ class Sus_Bot():
         self.z = 1
         self.trunk_h = (3,4,5,6,7,8,9)
         self.trunk_hc = cycle(self.trunk_h)
+        self.rgb = self.paint.values()
+        self.rgb_list = list(self.rgb)
+        self.palettedata = list(itertools.chain(*self.rgb_list))
         
     def hotkeys(self):
         keyboard.unhook_all()
         time.sleep(1)
-        print("Hotkeys on.")
+        print("Hotkeys on. Press F8 to pause.")
         keyboard.on_press(self.onkeypress)
         keyboard.add_hotkey('r', lambda: self.randtrees())
         keyboard.add_hotkey('k', lambda: self.randmongus())
@@ -65,11 +75,9 @@ class Sus_Bot():
         keyboard.add_hotkey('p', lambda: self.randpasteimg())
         keyboard.add_hotkey("'", lambda: self.rectangle())
         keyboard.add_hotkey(';', lambda: self.rectangle_alt())
-
         keyboard.add_hotkey('shift+P', lambda: self.loop_randpasteimg())
         keyboard.add_hotkey('shift+"', lambda: self.loop_rectangle())
         keyboard.add_hotkey('shift+:', lambda: self.loop_rectangle_alt())
-
         keyboard.add_hotkey('x', lambda: self.toggle_logos())
         keyboard.add_hotkey('f8', lambda: self.sus_pause())
         keyboard.add_hotkey('home', lambda: self.reset_page())
@@ -168,7 +176,6 @@ class Sus_Bot():
         if hotkey == hotkey:
             try:
                 next(self.cyclerlist[hotkey]).click()
-                #current_palette = "next(colors_cycle{}).click()".format(hotkey)
             except:
                 self.load_colors()
                 
@@ -220,34 +227,36 @@ class Sus_Bot():
         time.sleep(.1)
     
     def copyimg(self):
-        if self.bxby and self.txty != None:
-            try:
-                self.empty_work_order = { "white":{}, "grey1":{}, "grey2":{}, "grey3":{},
-                                "grey4":{}, "black":{}, "green1":{}, "green2":{},
-                                "green3":{},"green4":{}, "green5":{}, "yellow1":{},
-                                "yellow2":{}, "yellow3":{}, "yellow4":{}, "brown1":{},
-                                "brown2":{}, "brown3":{},"red1":{}, "red2":{}, "red3":{},
-                                "orange":{}, "brown4":{}, "peach1":{}, "peach2":{},
-                                "peach3":{}, "pink1":{},"pink2":{}, "pink3":{},
-                                "pink4":{}, "purple":{}, "blue1":{}, "blue2":{},
-                                "blue3":{}, "blue4":{}, "blue5":{},
-                                "blue6":{}, "blue7":{}, "cyan":{} }            
-                element = self.driver.find_element(By.XPATH, '/html/body/div[3]/div[3]')
-                self.driver.execute_script("placeholder.style.display = 'none';",element)
-                image = pyautogui.screenshot(region=(self.txty[0], self.txty[1], self.bxby[0], self.bxby[1]))
-                self.RANGE1, self.RANGE2 = self.bxby[0] - self.txty[0], self.bxby[1] - self.txty[1]
-                self.full_work_order=copy.deepcopy(self.empty_work_order.copy())
-                self.px1 = image.load()
-                for X in range(self.RANGE1):
-                    for Y in range(self.RANGE2):
-                        r, g, b = self.px1[X, Y]
-                        if self.px1[X, Y] in self.paint.values() and self.px1[X, Y] not in self.colorfilter:
-                            self.full_work_order[list(self.paint.keys())[list(self.paint.values()).index(self.px1[X, Y])]].update({(X,Y):(r,g,b)})
-                print('Copied.')
-            except:
-                self.load_colors()
-                self.copyimg()
+        self.empty_work_order = { "white":{}, "grey1":{}, "grey2":{}, "grey3":{},
+                        "grey4":{}, "black":{}, "green1":{}, "green2":{},
+                        "green3":{},"green4":{}, "green5":{}, "yellow1":{},
+                        "yellow2":{}, "yellow3":{}, "yellow4":{}, "brown1":{},
+                        "brown2":{}, "brown3":{},"red1":{}, "red2":{}, "red3":{},
+                        "orange":{}, "brown4":{}, "peach1":{}, "peach2":{},
+                        "peach3":{}, "pink1":{},"pink2":{}, "pink3":{},
+                        "pink4":{}, "purple":{}, "blue1":{}, "blue2":{},
+                        "blue3":{}, "blue4":{}, "blue5":{},
+                        "blue6":{}, "blue7":{}, "cyan":{} }            
+        element = self.driver.find_element(By.XPATH, '/html/body/div[3]/div[3]')
+        self.driver.execute_script("placeholder.style.display = 'none';",element)
+        image = pyautogui.screenshot(region=(self.txty[0], self.txty[1], self.bxby[0], self.bxby[1]))
+        self.RANGE1, self.RANGE2 = self.bxby[0] - self.txty[0], self.bxby[1] - self.txty[1]
+        self.full_work_order=copy.deepcopy(self.empty_work_order.copy())
+        self.px1 = image.load()
+        for X in range(self.RANGE1):
+            for Y in range(self.RANGE2):
+                abc = self.closest_color(self.px1[X, Y][0],self.px1[X, Y][1],self.px1[X, Y][2])
+                if abc not in self.colorfilter:
+                    self.full_work_order[list(self.paint.keys())[list(self.paint.values()).index(abc)]].update({(X,Y):(abc)})
+        print(f'A {self.RANGE1} by {self.RANGE2} zone has been created.')
         return
+    
+    def closest_color(self, r, g, b): #thank you hbot000 for this function :) h for homie
+        self.color_diffs = []
+        for cr, cg, cb in zip(*[iter(self.palettedata)]*3):
+            self.color_diff = sqrt(abs(r - cr)**2 + abs(g - cg)**2 + abs(b - cb)**2)
+            self.color_diffs.append((self.color_diff, (cr, cg, cb)))
+        return min(self.color_diffs)[1]
     
     def randpasteimg(self):
         if self.bxby and self.txty != None:
@@ -293,7 +302,7 @@ class Sus_Bot():
             if keyboard.is_pressed("j"):
                 break
     
-    def rectangle(self):#fills in a rectangle area (use Y and U to set the corners before hand)
+    def rectangle(self):
         try:
             self.getcurcolor()
             self.RANGE1, self.RANGE2 = self.bxby[0] - self.txty[0], self.bxby[1] - self.txty[1]
@@ -318,7 +327,7 @@ class Sus_Bot():
             if keyboard.is_pressed("j"):
                 break
 
-    def rectangle_alt(self):#fills in the "current saved color" with your actual currently selected color in a rectangle area (use Y and U to set the corners before hand)
+    def rectangle_alt(self):
         try:
             self.RANGE1, self.RANGE2 = self.bxby[0] - self.txty[0], self.bxby[1] - self.txty[1]
             self.scrnsht = pyautogui.screenshot(region=(self.txty[0], self.txty[1], self.bxby[0], self.bxby[1]))
@@ -463,7 +472,7 @@ class Sus_Bot():
         return
 
     def reset_page(self): #resets pixelplace to freshly loaded and zoom level 1
-        #visibility_state()
+        self.visibility_state()
         self.driver.get("https://pixelplace.io/7-pixels-world-war")
         self.load_colors()
         #keyboard.press_and_release('l,t')
