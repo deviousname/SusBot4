@@ -42,9 +42,9 @@ Step 5: Right-click Sus_Bot.py and click Edit with IDLE and select the correct v
   
   Once it is finished it will move the mouse back to the center of the image you pasted.
   
-  Pressing [ will mark your location, you can overwrite it with each subsequent [ press.
+  Pressing '[' will mark your location, you can overwrite it with each subsequent [ press.
   
-  Pressing shift + [ will remove the marker. Use this to save your spot when using Image Paster.
+  Pressing 'Shift + [' will remove the marker. Use this to save your spot when using Image Paster.
   
     Retangle & Selective Retangle:
 
