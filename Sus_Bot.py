@@ -61,6 +61,7 @@ class Sus_Bot():
         keyboard.add_hotkey('y', lambda: self.zone(1))
         keyboard.add_hotkey('u', lambda: self.zone(2))
         keyboard.add_hotkey('[', lambda: self.marker_toggle())
+        keyboard.add_hotkey('shift+{', lambda: self.marker_toggle_remove())
         keyboard.add_hotkey('p', lambda: self.randpasteimg())
         keyboard.add_hotkey("'", lambda: self.rectangle())
         keyboard.add_hotkey(';', lambda: self.rectangle_alt())
@@ -209,13 +210,14 @@ class Sus_Bot():
         time.sleep(1)
 
     def marker_toggle(self):
-        if self.marker != None:
-            self.marker = None
-            print ('Marker removed')
-        else:
-            self.marker = pyautogui.position()
-            print ('Marked.')
-        time.sleep(1)
+        self.marker = pyautogui.position()
+        print (f'Mark set at: x={self.marker[0]},y={self.marker[1]}')
+        time.sleep(.1)
+
+    def marker_toggle_remove(self):
+        self.marker = None
+        print ('Marker removed.')
+        time.sleep(.1)
     
     def copyimg(self):
         if self.bxby and self.txty != None:
