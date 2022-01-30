@@ -30,7 +30,7 @@ Step 5: Right-click Sus_Bot.py and click Edit with IDLE and select the correct v
 
     Image Paster:
 
-  First you need to select the area you want to copy, and it will only copy pixelplace colors.
+  First you need to select the area you want to copy. It can copy any colors and convert to Pixelplace palette.
   
   It will not copy colors you have put in your color filter. This allows transparency effects.
   
