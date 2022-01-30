@@ -64,10 +64,14 @@ class Sus_Bot():
         keyboard.add_hotkey('p', lambda: self.randpasteimg())
         keyboard.add_hotkey("'", lambda: self.rectangle())
         keyboard.add_hotkey(';', lambda: self.rectangle_alt())
+
+        keyboard.add_hotkey('shift+P', lambda: self.loop_randpasteimg())
+        keyboard.add_hotkey('shift+"', lambda: self.loop_rectangle())
+        keyboard.add_hotkey('shift+:', lambda: self.loop_rectangle_alt())
+
         keyboard.add_hotkey('x', lambda: self.toggle_logos())
         keyboard.add_hotkey('f8', lambda: self.sus_pause())
         keyboard.add_hotkey('home', lambda: self.reset_page())
-        keyboard.add_hotkey('end', lambda: self.load_colors())
         
     def login(self):
         #login sequence
@@ -277,11 +281,15 @@ class Sus_Bot():
                                 pyautogui.moveTo(x1, y1)
                                 return
                 pyautogui.moveTo(x1, y1)
-                print('Pasted')
             except:
                 self.load_colors()
                 self.randpasteimg()
-        return
+
+    def loop_randpasteimg(self):
+        while True:
+            self.randpasteimg()
+            if keyboard.is_pressed("j"):
+                break
     
     def rectangle(self):#fills in a rectangle area (use Y and U to set the corners before hand)
         try:
@@ -301,7 +309,12 @@ class Sus_Bot():
         except:
             self.load_colors()
             self.rectangle()
-        return
+
+    def loop_rectangle(self):
+        while True:
+            self.rectangle()
+            if keyboard.is_pressed("j"):
+                break
 
     def rectangle_alt(self):#fills in the "current saved color" with your actual currently selected color in a rectangle area (use Y and U to set the corners before hand)
         try:
@@ -319,7 +332,12 @@ class Sus_Bot():
         except:
             self.load_colors()
             self.rectangle_alt
-        return
+
+    def loop_rectangle_alt(self):
+        while True:
+            self.rectangle_alt()
+            if keyboard.is_pressed("j"):
+                break
 
     def zone(self, hotkey):      
         if hotkey == 1:
@@ -448,7 +466,7 @@ class Sus_Bot():
         #visibility_state()
         self.driver.get("https://pixelplace.io/7-pixels-world-war")
         self.load_colors()
-        keyboard.press_and_release('l,t')
+        #keyboard.press_and_release('l,t')
         return
 
     def sus_pause(self):
