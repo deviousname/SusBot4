@@ -3,7 +3,7 @@
 #no permission to sell
 
 import crewmate #login credentials, requires a Reddit account, open crewmate.py and put your info there
-import keyboard 
+import keyboard #https://pypi.org/project/keyboard/
 import pyautogui
 import random
 import time
@@ -15,7 +15,7 @@ from PIL import ImageGrab
 from PIL import Image
 from PIL import ImageChops
 
-from selenium import webdriver
+from selenium import webdriver #https://selenium-python.readthedocs.io/
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
@@ -104,9 +104,9 @@ class Sus_Bot():
             "blue6":(0,131,199), "blue7":(0,211,221), "cyan":(69,255,200)
             }
         self.color = {}
-        for a, b in zip(self.paint.keys(),range(0,39)):  #Example: self.color.get('white').click()      
+        for a, b in zip(self.paint.keys(),range(0,39)):      
              self.path = self.driver.find_elements(By.XPATH,'//*[@id="palette-buttons"]/a')[b]
-             self.color.update({f"{a}":self.path})
+             self.color.update({f"{a}":self.path}) #Example: self.color.get('white').click() 
         
         self.color8 = (self.color.get('white'),self.color.get('grey1'),self.color.get('grey3'),self.color.get('grey4'),self.color.get('black'),
                   self.color.get('green1'),self.color.get('green2'),self.color.get('green3'),self.color.get('green4'),self.color.get('green5'),
@@ -155,9 +155,8 @@ class Sus_Bot():
         self.leaves = [self.paint.get('green1'), self.paint.get('green2'), self.paint.get('green3'),
                   self.paint.get('green4'), self.paint.get('green5')]
         
-        self.trees = self.tree_trunks + self.leaves
-        
-        print('Colors loaded. Susbot is ready.')
+        self.trees = self.tree_trunks + self.leaves        
+        print('Colors loaded.')
         return
     
     def rainbowbrush(self, hotkey):
@@ -215,123 +214,141 @@ class Sus_Bot():
         time.sleep(1)
     
     def copyimg(self):
-        self.load_colors()
-        self.empty_work_order = { "white":{}, "grey1":{}, "grey2":{}, "grey3":{},
-                        "grey4":{}, "black":{}, "green1":{}, "green2":{},
-                        "green3":{},"green4":{}, "green5":{}, "yellow1":{},
-                        "yellow2":{}, "yellow3":{}, "yellow4":{}, "brown1":{},
-                        "brown2":{}, "brown3":{},"red1":{}, "red2":{}, "red3":{},
-                        "orange":{}, "brown4":{}, "peach1":{}, "peach2":{},
-                        "peach3":{}, "pink1":{},"pink2":{}, "pink3":{},
-                        "pink4":{}, "purple":{}, "blue1":{}, "blue2":{},
-                        "blue3":{}, "blue4":{}, "blue5":{},
-                        "blue6":{}, "blue7":{}, "cyan":{} }
-        
-        element = self.driver.find_element(By.XPATH, '/html/body/div[3]/div[3]')
-        self.driver.execute_script("placeholder.style.display = 'none';",element)
-        image = pyautogui.screenshot(region=(self.txty[0], self.txty[1], self.bxby[0], self.bxby[1]))
-        self.RANGE1, self.RANGE2 = self.bxby[0] - self.txty[0], self.bxby[1] - self.txty[1]
-        self.full_work_order=copy.deepcopy(self.empty_work_order.copy())
-        self.px1 = image.load()
-        for X in range(self.RANGE1):
-            for Y in range(self.RANGE2):
-                r, g, b = self.px1[X, Y]
-                if self.px1[X, Y] in self.paint.values() and self.px1[X, Y] not in self.colorfilter:
-                    self.full_work_order[list(self.paint.keys())[list(self.paint.values()).index(self.px1[X, Y])]].update({(X,Y):(r,g,b)})
-        print('Copied.')
-        return 
-
-    def randpasteimg(self):
-        self.load_colors()
-        if self.marker != None:
-            x1, y1 = self.marker
-        else:
-            x1, y1 = pyautogui.position()        
-        image2 = pyautogui.screenshot(region=(x1 - int(self.RANGE1/2), y1 - int(self.RANGE2/2), self.RANGE1, self.RANGE2))
-        self.px2 = image2.load()    
-        for i in self.full_work_order:
-            if self.full_work_order[i] != {}:
-                self.newdict = dict(self.full_work_order[i])
-                self.color.get(i).click()
-                self.newdictR = {}
-                for item, value in random.sample(list(self.newdict.items()), len(self.newdict)):
-                    self.newdictR.update({(item):(value)})                
-                for j in self.newdictR:
-                    try:
-                        if self.px2[j] in self.paint.values() and self.px2[j] != self.px1[j]:
-                            pyautogui.click(x1 + j[0] - int(self.RANGE1/2), y1 + j[1] - int(self.RANGE2/2))
-                    except:
-                        pass
-                    if keyboard.is_pressed("j"):
-                        pyautogui.moveTo(x1, y1)
-                        return
-        pyautogui.moveTo(x1, y1)
+        if self.bxby and self.txty != None:
+            try:
+                self.empty_work_order = { "white":{}, "grey1":{}, "grey2":{}, "grey3":{},
+                                "grey4":{}, "black":{}, "green1":{}, "green2":{},
+                                "green3":{},"green4":{}, "green5":{}, "yellow1":{},
+                                "yellow2":{}, "yellow3":{}, "yellow4":{}, "brown1":{},
+                                "brown2":{}, "brown3":{},"red1":{}, "red2":{}, "red3":{},
+                                "orange":{}, "brown4":{}, "peach1":{}, "peach2":{},
+                                "peach3":{}, "pink1":{},"pink2":{}, "pink3":{},
+                                "pink4":{}, "purple":{}, "blue1":{}, "blue2":{},
+                                "blue3":{}, "blue4":{}, "blue5":{},
+                                "blue6":{}, "blue7":{}, "cyan":{} }            
+                element = self.driver.find_element(By.XPATH, '/html/body/div[3]/div[3]')
+                self.driver.execute_script("placeholder.style.display = 'none';",element)
+                image = pyautogui.screenshot(region=(self.txty[0], self.txty[1], self.bxby[0], self.bxby[1]))
+                self.RANGE1, self.RANGE2 = self.bxby[0] - self.txty[0], self.bxby[1] - self.txty[1]
+                self.full_work_order=copy.deepcopy(self.empty_work_order.copy())
+                self.px1 = image.load()
+                for X in range(self.RANGE1):
+                    for Y in range(self.RANGE2):
+                        r, g, b = self.px1[X, Y]
+                        if self.px1[X, Y] in self.paint.values() and self.px1[X, Y] not in self.colorfilter:
+                            self.full_work_order[list(self.paint.keys())[list(self.paint.values()).index(self.px1[X, Y])]].update({(X,Y):(r,g,b)})
+                print('Copied.')
+            except:
+                self.load_colors()
+                self.copyimg()
         return
-
+    
+    def randpasteimg(self):
+        if self.bxby and self.txty != None:
+            try:
+                if self.marker != None:
+                    x1, y1 = self.marker
+                else:
+                    x1, y1 = pyautogui.position()        
+                image2 = pyautogui.screenshot(region=(x1 - int(self.RANGE1/2), y1 - int(self.RANGE2/2), self.RANGE1, self.RANGE2))
+                self.full_work_order2=copy.deepcopy(self.empty_work_order.copy())
+                self.px2 = image2.load()    
+                for X in range(self.RANGE1):
+                    for Y in range(self.RANGE2):
+                        r, g, b = self.px2[X, Y]
+                        if self.px2[X, Y] in self.paint.values() and self.px2[X, Y] not in self.colorfilter:
+                            self.full_work_order2[list(self.paint.keys())[list(self.paint.values()).index(self.px2[X, Y])]].update({(X,Y):(r,g,b)})
+                self.work_order = {}
+                for i in self.full_work_order:
+                    for e in self.full_work_order[i]:
+                        self.fwo = dict(self.full_work_order[i].items() - self.full_work_order2[i].items())
+                        self.work_order.update({i:self.fwo})                
+                for i in self.work_order:
+                    if self.work_order[i] != {}:
+                        self.newdict = dict(self.work_order[i])
+                        self.color.get(i).click()
+                        self.newdictR = {}
+                        for item, value in random.sample(list(self.newdict.items()), len(self.newdict)):
+                            self.newdictR.update({(item):(value)})                
+                        for j in self.newdictR:
+                            if self.px2[j[0],j[1]] != self.ocean[0]:
+                                pyautogui.click(x1 + j[0] - int(self.RANGE1/2), y1 + j[1] - int(self.RANGE2/2))
+                            if keyboard.is_pressed("j"):
+                                pyautogui.moveTo(x1, y1)
+                                return
+                pyautogui.moveTo(x1, y1)
+                print('Pasted')
+            except:
+                self.load_colors()
+                self.randpasteimg()
+        return
+    
     def rectangle(self):#fills in a rectangle area (use Y and U to set the corners before hand)
-        #self.load_colors()
-        self.getcurcolor()
-        self.RANGE1, self.RANGE2 = self.bxby[0] - self.txty[0], self.bxby[1] - self.txty[1]
-        self.scrnsht = pyautogui.screenshot(region=(self.txty[0], self.txty[1], self.bxby[0], self.bxby[1]))
-        keyboard.press('space')
-        for A in range(self.RANGE1):
-            for B in range(self.RANGE2):
-                pix = self.scrnsht.getpixel((A, B))
-                if pix not in self.ocean + self.curcol + self.colorfilter:
-                    pyautogui.moveTo(A + self.txty[0], B + self.txty[1])
-                    if keyboard.is_pressed("j"):
-                        keyboard.release('space')
-                        return
-        keyboard.release('space')
+        try:
+            self.getcurcolor()
+            self.RANGE1, self.RANGE2 = self.bxby[0] - self.txty[0], self.bxby[1] - self.txty[1]
+            self.scrnsht = pyautogui.screenshot(region=(self.txty[0], self.txty[1], self.bxby[0], self.bxby[1]))
+            keyboard.press('space')
+            for A in range(self.RANGE1):
+                for B in range(self.RANGE2):
+                    pix = self.scrnsht.getpixel((A, B))
+                    if pix not in self.ocean + self.curcol + self.colorfilter:
+                        pyautogui.moveTo(A + self.txty[0], B + self.txty[1])
+                        if keyboard.is_pressed("j"):
+                            keyboard.release('space')
+                            return
+            keyboard.release('space')
+        except:
+            self.load_colors()
+            self.rectangle()
         return
 
     def rectangle_alt(self):#fills in the "current saved color" with your actual currently selected color in a rectangle area (use Y and U to set the corners before hand)
-        #self.load_colors()
-        self.RANGE1, self.RANGE2 = self.bxby[0] - self.txty[0], self.bxby[1] - self.txty[1]
-        self.scrnsht = pyautogui.screenshot(region=(self.txty[0], self.txty[1], self.bxby[0], self.bxby[1]))
-        keyboard.press('space')
-        for A in range(self.RANGE1):
-            for B in range(self.RANGE2):            
-                if self.scrnsht.getpixel((A, B)) in self.colorfilter:
-                    pyautogui.moveTo(A + self.txty[0], B + self.txty[1])
-                    if keyboard.is_pressed("j"):
-                        keyboard.release('space')
-                        return
-        keyboard.release('space')
+        try:
+            self.RANGE1, self.RANGE2 = self.bxby[0] - self.txty[0], self.bxby[1] - self.txty[1]
+            self.scrnsht = pyautogui.screenshot(region=(self.txty[0], self.txty[1], self.bxby[0], self.bxby[1]))
+            keyboard.press('space')
+            for A in range(self.RANGE1):
+                for B in range(self.RANGE2):            
+                    if self.scrnsht.getpixel((A, B)) in self.colorfilter:
+                        pyautogui.moveTo(A + self.txty[0], B + self.txty[1])
+                        if keyboard.is_pressed("j"):
+                            keyboard.release('space')
+                            return
+            keyboard.release('space')
+        except:
+            self.load_colors()
+            self.rectangle_alt
         return
 
     def zone(self, hotkey):      
         if hotkey == 1:
             self.txty = pyautogui.position()
             if self.bxby != None:
-                try:
-                    self.copyimg()
-                except Exception as e:
-                    print(e)
-                    #self.load_colors()
-
+                self.copyimg()
         if hotkey == 2:
             self.bxby = pyautogui.position()
             if self.txty != None:
-                try:
-                    self.copyimg()
-                except Exception as e:
-                    print(e)
-                    #self.load_colors()
+                self.copyimg()
                     
     def randmongus(self): #යꇺ𐐘ඞ
-        while True:
-            self.xr = random.randrange(self.txty[0],self.bxby[0])
-            self.yr = random.randrange(self.txty[1],self.bxby[1])
-            self.pix = ImageGrab.grab().getpixel((self.xr, self.yr))
-            pyautogui.PAUSE = .06 #slow down the drawing speed as to not skip pixels
-            if self.pix not in self.ocean + self.colorfilter:
-                pyautogui.moveTo(self.xr,self.yr)
-                self.mongus()
-            pyautogui.PAUSE = default_speed #return to normal speed
-            if keyboard.is_pressed("j"):
-                keyboard.release('space')
-                return
+        try:
+            while True:
+                self.xr = random.randrange(self.txty[0],self.bxby[0])
+                self.yr = random.randrange(self.txty[1],self.bxby[1])
+                self.pix = ImageGrab.grab().getpixel((self.xr, self.yr))
+                pyautogui.PAUSE = .06 #slow down the drawing speed as to not skip pixels
+                if self.pix not in self.ocean + self.colorfilter:
+                    pyautogui.moveTo(self.xr,self.yr)
+                    self.mongus()
+                pyautogui.PAUSE = default_speed #return to normal speed
+                if keyboard.is_pressed("j"):
+                    keyboard.release('space')
+                    return
+        except:
+            self.load_colors()
+            self.randmongus()
+        return
             
     def mongus(self): #draws mongus
         x, y = pyautogui.position()
@@ -365,21 +382,26 @@ class Sus_Bot():
         self.z = -self.z
             
     def randtrees(self):
-        while True:
-            self.xr = random.randrange(self.txty[0],self.bxby[0])
-            self.yr = random.randrange(self.txty[1],self.bxby[1])
-            self.pix = ImageGrab.grab().getpixel((self.xr, self.yr))
-            if self.pix not in self.colorfilter + self.trees + self.ocean:
-                pyautogui.moveTo(self.xr,self.yr)
-                pyautogui.PAUSE = .06 #slow down the drawing speed as to not skip pixels
-                if random.random() >= 0.5: #50/50 chance                    
-                    self.trees_1()
-                else:
-                    self.trees_alt()
-                pyautogui.PAUSE = default_speed #return to normal speed
-            if keyboard.is_pressed("j"):
-                keyboard.release('space')
-                return
+        try:
+            while True:
+                self.xr = random.randrange(self.txty[0],self.bxby[0])
+                self.yr = random.randrange(self.txty[1],self.bxby[1])
+                self.pix = ImageGrab.grab().getpixel((self.xr, self.yr))
+                if self.pix not in self.colorfilter + self.trees + self.ocean:
+                    pyautogui.moveTo(self.xr,self.yr)
+                    pyautogui.PAUSE = .06 #slow down the drawing speed as to not skip pixels
+                    if random.random() >= 0.5: #50/50 chance                    
+                        self.trees_1()
+                    else:
+                        self.trees_alt()
+                    pyautogui.PAUSE = default_speed #return to normal speed
+                if keyboard.is_pressed("j"):
+                    keyboard.release('space')
+                    return
+        except:
+            self.load_colors()
+            self.randtrees()
+        return
         
     def trees_1(self):#draws trees
         x, y = pyautogui.position()
