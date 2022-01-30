@@ -339,15 +339,14 @@ class Sus_Bot():
             if keyboard.is_pressed("j"):
                 break
 
-    def zone(self, hotkey):      
+    def zone(self, hotkey):
         if hotkey == 1:
             self.txty = pyautogui.position()
-            if self.bxby != None:
-                self.copyimg()
         if hotkey == 2:
             self.bxby = pyautogui.position()
-            if self.txty != None:
-                self.copyimg()
+        if self.txty != None and self.bxby != None and self.txty[0] < self.bxby[0] and self.txty[1] < self.bxby[1]:
+            self.copyimg()
+
                     
     def randmongus(self): #යꇺ𐐘ඞ
         try:
