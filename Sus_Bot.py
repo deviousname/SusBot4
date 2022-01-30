@@ -346,22 +346,21 @@ class Sus_Bot():
             self.bxby = pyautogui.position()
         if self.txty != None and self.bxby != None and self.txty[0] < self.bxby[0] and self.txty[1] < self.bxby[1]:
             self.copyimg()
-
                     
     def randmongus(self): #යꇺ𐐘ඞ
         try:
+            pyautogui.PAUSE = .06 #slow down the drawing speed as to not skip pixels
             while True:
                 self.xr = random.randrange(self.txty[0],self.bxby[0])
                 self.yr = random.randrange(self.txty[1],self.bxby[1])
                 self.pix = ImageGrab.grab().getpixel((self.xr, self.yr))
-                pyautogui.PAUSE = .06 #slow down the drawing speed as to not skip pixels
                 if self.pix not in self.ocean + self.colorfilter:
                     pyautogui.moveTo(self.xr,self.yr)
                     self.mongus()
-                pyautogui.PAUSE = default_speed #return to normal speed
                 if keyboard.is_pressed("j"):
                     keyboard.release('space')
-                    return
+                    pyautogui.PAUSE = default_speed #return to normal speed
+                    break            
         except:
             self.load_colors()
             self.randmongus()
@@ -400,21 +399,21 @@ class Sus_Bot():
             
     def randtrees(self):
         try:
+            pyautogui.PAUSE = .05 #slow down the drawing speed as to not skip pixels
             while True:
                 self.xr = random.randrange(self.txty[0],self.bxby[0])
                 self.yr = random.randrange(self.txty[1],self.bxby[1])
                 self.pix = ImageGrab.grab().getpixel((self.xr, self.yr))
                 if self.pix not in self.colorfilter + self.trees + self.ocean:
                     pyautogui.moveTo(self.xr,self.yr)
-                    pyautogui.PAUSE = .06 #slow down the drawing speed as to not skip pixels
                     if random.random() >= 0.5: #50/50 chance                    
                         self.trees_1()
                     else:
                         self.trees_alt()
-                    pyautogui.PAUSE = default_speed #return to normal speed
                 if keyboard.is_pressed("j"):
                     keyboard.release('space')
-                    return
+                    pyautogui.PAUSE = default_speed #return to normal speed
+                    break
         except:
             self.load_colors()
             self.randtrees()
