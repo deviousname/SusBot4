@@ -50,12 +50,16 @@ class Sus_Bot():
         self.rgb = self.paint.values()
         self.rgb_list = list(self.rgb)
         self.palettedata = list(itertools.chain(*self.rgb_list))
+        self.full_work_order = {}
+        self.full_work_order2 = {}
+        self.rect_fwo_list = []
         
     def hotkeys(self):
         keyboard.unhook_all()
         time.sleep(1)
         print("Hotkeys on. Press F8 to pause.")
         keyboard.on_press(self.onkeypress)
+        keyboard.add_hotkey('`', lambda: self.get_coordinate())
         keyboard.add_hotkey('r', lambda: self.randtrees())
         keyboard.add_hotkey('k', lambda: self.randmongus())
         keyboard.add_hotkey("w+space", lambda: self.rainbowbrush(0))
@@ -70,14 +74,15 @@ class Sus_Bot():
         keyboard.add_hotkey('0', lambda: self.removefilters())
         keyboard.add_hotkey('y', lambda: self.zone(1))
         keyboard.add_hotkey('u', lambda: self.zone(2))
+        keyboard.add_hotkey(']', lambda: self.zone(3))
         keyboard.add_hotkey('[', lambda: self.marker_toggle())
         keyboard.add_hotkey('shift+{', lambda: self.marker_toggle_remove())
         keyboard.add_hotkey('p', lambda: self.randpasteimg())
-        keyboard.add_hotkey("'", lambda: self.rectangle())
-        keyboard.add_hotkey(';', lambda: self.rectangle_alt())
+        keyboard.add_hotkey("'", lambda: self.rectangle_scatter())
+        keyboard.add_hotkey(';', lambda: self.rectangle_alt_scatter())
         keyboard.add_hotkey('shift+P', lambda: self.loop_randpasteimg())
-        keyboard.add_hotkey('shift+"', lambda: self.loop_rectangle())
-        keyboard.add_hotkey('shift+:', lambda: self.loop_rectangle_alt())
+        keyboard.add_hotkey('shift+"', lambda: self.loop_rectangle_scatter())
+        keyboard.add_hotkey('shift+:', lambda: self.loop_rectangle_alt_scatter())
         keyboard.add_hotkey('x', lambda: self.toggle_logos())
         keyboard.add_hotkey('f8', lambda: self.sus_pause())
         keyboard.add_hotkey('home', lambda: self.reset_page())
@@ -241,22 +246,28 @@ class Sus_Bot():
         self.driver.execute_script("placeholder.style.display = 'none';",element)
         image = pyautogui.screenshot(region=(self.txty[0], self.txty[1], self.bxby[0], self.bxby[1]))
         self.RANGE1, self.RANGE2 = self.bxby[0] - self.txty[0], self.bxby[1] - self.txty[1]
+        self.full_work_order.clear()
+        self.full_work_order2.clear()
         self.full_work_order=copy.deepcopy(self.empty_work_order.copy())
+        self.full_work_order2=copy.deepcopy(self.empty_work_order.copy())
         self.px1 = image.load()
         for X in range(self.RANGE1):
             for Y in range(self.RANGE2):
-                abc = self.closest_color(self.px1[X, Y][0],self.px1[X, Y][1],self.px1[X, Y][2])
-                if abc not in self.colorfilter:
+                c = self.px1[X, Y]
+                if c not in self.paint.keys() and c not in self.colorfilter and c != (204,204,204):
+                    abc = self.closest_color(c[0],c[1],c[2])
                     self.full_work_order[list(self.paint.keys())[list(self.paint.values()).index(abc)]].update({(X,Y):(abc)})
+                elif c in self.paint.keys() and c not in self.colorfilter:
+                    self.full_work_order[list(self.paint.keys())[list(self.paint.values()).index(c[0],c[1],c[2])]].update({(X,Y):(c[0],c[1],c[2])})
         print(f'A {self.RANGE1} by {self.RANGE2} zone has been created.')
         return
     
     def closest_color(self, r, g, b): #thank you hbot000 for this function :) h for homie
-        self.color_diffs = []
+        color_diffs = []
         for cr, cg, cb in zip(*[iter(self.palettedata)]*3):
-            self.color_diff = sqrt(abs(r - cr)**2 + abs(g - cg)**2 + abs(b - cb)**2)
-            self.color_diffs.append((self.color_diff, (cr, cg, cb)))
-        return min(self.color_diffs)[1]
+            color_diff = sqrt(abs(r - cr)**2 + abs(g - cg)**2 + abs(b - cb)**2)
+            color_diffs.append((color_diff, (cr, cg, cb)))
+        return min(color_diffs)[1]
     
     def randpasteimg(self):
         if self.bxby and self.txty != None:
@@ -264,15 +275,15 @@ class Sus_Bot():
                 if self.marker != None:
                     x1, y1 = self.marker
                 else:
-                    x1, y1 = pyautogui.position()        
+                    x1, y1 = pyautogui.position()
+                self.disable_color_block()
                 image2 = pyautogui.screenshot(region=(x1 - int(self.RANGE1/2), y1 - int(self.RANGE2/2), self.RANGE1, self.RANGE2))
-                self.full_work_order2=copy.deepcopy(self.empty_work_order.copy())
                 self.px2 = image2.load()    
                 for X in range(self.RANGE1):
                     for Y in range(self.RANGE2):
                         r, g, b = self.px2[X, Y]
-                        if self.px2[X, Y] in self.paint.values() and self.px2[X, Y] not in self.colorfilter:
-                            self.full_work_order2[list(self.paint.keys())[list(self.paint.values()).index(self.px2[X, Y])]].update({(X,Y):(r,g,b)})
+                        if (r, g, b) in self.paint.values() and (r, g, b) not in self.colorfilter:
+                            self.full_work_order2[list(self.paint.keys())[list(self.paint.values()).index((r, g, b))]].update({(X,Y):(r,g,b)})
                 self.work_order = {}
                 for i in self.full_work_order:
                     for e in self.full_work_order[i]:
@@ -290,11 +301,16 @@ class Sus_Bot():
                                 pyautogui.click(x1 + j[0] - int(self.RANGE1/2), y1 + j[1] - int(self.RANGE2/2))
                             if keyboard.is_pressed("j"):
                                 pyautogui.moveTo(x1, y1)
+                                self.full_work_order2.clear()
+                                self.full_work_order2=copy.deepcopy(self.empty_work_order.copy())
                                 return
                 pyautogui.moveTo(x1, y1)
+                self.full_work_order2.clear()
+                self.full_work_order2=copy.deepcopy(self.empty_work_order.copy())
             except:
                 self.load_colors()
                 self.randpasteimg()
+        return
 
     def loop_randpasteimg(self):
         while True:
@@ -326,6 +342,36 @@ class Sus_Bot():
             self.rectangle()
             if keyboard.is_pressed("j"):
                 break
+            
+    def rectangle_scatter(self):
+        try:
+            self.rect_fwo_list.clear()
+            self.getcurcolor()
+            self.RANGE1, self.RANGE2 = self.bxby[0] - self.txty[0], self.bxby[1] - self.txty[1]
+            self.disable_color_block()
+            self.scrnsht = pyautogui.screenshot(region=(self.txty[0], self.txty[1], self.bxby[0], self.bxby[1]))
+            self.px1 = self.scrnsht.load()
+            self.rect_fwo_list = []
+            for X in range(self.RANGE1):
+                for Y in range(self.RANGE2):
+                    c = self.px1[X, Y]
+                    if c not in self.ocean + self.curcol + self.colorfilter:
+                        self.rect_fwo_list.append((X, Y)) 
+            random.shuffle(self.rect_fwo_list)
+            for i in self.rect_fwo_list:
+                pyautogui.click(i[0]+self.txty[0], i[1]+self.txty[1])
+                self.rect_fwo_list.pop()
+                if keyboard.is_pressed("j"):
+                    return
+        except:
+            self.load_colors()
+            self.rectangle_scatter()
+            
+    def loop_rectangle_scatter(self):
+        while True:
+            self.rectangle_scatter()
+            if keyboard.is_pressed("j"):
+                break
 
     def rectangle_alt(self):
         try:
@@ -342,21 +388,64 @@ class Sus_Bot():
             keyboard.release('space')
         except:
             self.load_colors()
-            self.rectangle_alt
-
+            self.rectangle_alt()
+            
     def loop_rectangle_alt(self):
         while True:
             self.rectangle_alt()
             if keyboard.is_pressed("j"):
                 break
 
+    def rectangle_alt_scatter(self):
+        try:
+            self.rect_fwo_list.clear()
+            self.RANGE1, self.RANGE2 = self.bxby[0] - self.txty[0], self.bxby[1] - self.txty[1]
+            self.disable_color_block()
+            self.scrnsht = pyautogui.screenshot(region=(self.txty[0], self.txty[1], self.bxby[0], self.bxby[1]))
+            self.px1 = self.scrnsht.load()
+            self.rect_fwo_list = []
+            for X in range(self.RANGE1):
+                for Y in range(self.RANGE2):
+                    c = self.px1[X, Y]
+                    if c in self.colorfilter:
+                        self.rect_fwo_list.append((X, Y)) 
+            random.shuffle(self.rect_fwo_list)
+            for i in self.rect_fwo_list:
+                pyautogui.click(i[0]+self.txty[0], i[1]+self.txty[1])
+                self.rect_fwo_list.pop()
+                if keyboard.is_pressed("j"):
+                    return
+        except:
+            self.load_colors()
+            self.rectangle_alt_scatter()
+
+
+    def loop_rectangle_alt_scatter(self):
+        while True:
+            self.rectangle_alt_scatter()
+            if keyboard.is_pressed("j"):
+                break
+
     def zone(self, hotkey):
         if hotkey == 1:
             self.txty = pyautogui.position()
+            print (f'Top-left mark created at {self.txty}')
+            try:
+                if self.bxby[0] > self.txty[0] and self.bxby[1] > self.txty[1]:
+                    print ('Zone ready.')
+            except:
+                pass
         if hotkey == 2:
             self.bxby = pyautogui.position()
-        if self.txty != None and self.bxby != None and self.txty[0] < self.bxby[0] and self.txty[1] < self.bxby[1]:
-            self.copyimg()
+            print (f'Bottom-right mark created at {self.bxby}')
+            try:
+                if self.bxby[0] > self.txty[0] and self.bxby[1] > self.txty[1]:
+                    print ('Zone ready.')
+            except:
+                pass
+        if hotkey == 3:
+            if self.txty != None and self.bxby != None and self.txty[0] < self.bxby[0] and self.txty[1] < self.bxby[1]:
+                self.copyimg()
                     
     def randmongus(self): #යꇺ𐐘ඞ
         try:
@@ -485,6 +574,20 @@ class Sus_Bot():
         keyboard.add_hotkey('f8', lambda: self.hotkeys())
         return
     
+    def get_coordinate(self):
+        coord_element = self.driver.find_element(By.XPATH,'/html/body/div[3]/div[4]').text
+        print(type(coord_element))
+        print(coord_element)
+        coord_element = make_tuple(coord_element)
+        print(type(coord_element))
+        print(coord_element)
+        
+    def disable_color_block(self):
+        e1 = self.driver.find_element(By.XPATH,'/html/body/div[3]/div[2]')
+        e2 = self.driver.find_element(By.XPATH,'/html/body/div[3]/div[3]')
+        self.driver.execute_script("arguments[0].style.display = 'none';",e1)
+        self.driver.execute_script("arguments[0].style.display = 'none';",e2)
+    
     def toggle_logos(self): #toggles guild war logos on and off
         self.visibility_state()
         if self.logos == True:
@@ -505,7 +608,7 @@ class Sus_Bot():
             self.logos = True
         time.sleep(1)
         return
-    
+            
     def onkeypress(self, event):
         if event.name == '1':
             self.getcurcolorhotkey(1)
