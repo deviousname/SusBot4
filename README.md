@@ -36,7 +36,7 @@ Step 5: Right-click Sus_Bot.py and click Edit with IDLE and select the correct v
   
   To select and area, first move your mouse to the lop left most corner of the area and press 'y'
   
-  Then move your mouse to the bottom right most corner and press 'u'. The image is copied now.
+  Then move your mouse to the bottom right most corner and press 'u'. Now press ] to copy that area.
   
   To paste the image somewhere else, move your mouse to that spot and press 'p' to paste.
   
